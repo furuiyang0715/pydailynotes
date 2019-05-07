@@ -33,8 +33,21 @@ def gen_complete_days(start: datetime.datetime, end: datetime.datetime):
     return np.array(dates_list)
 
 
+def avg_datetime(*dts: datetime) -> datetime:
+    """
+    计算一组时间的平均值
+    :param dts:
+    :return:
+    """
+    avg_ts = sum(map(lambda x: x.timestamp(), dts)) / len(dts)
+    return datetime.datetime.fromtimestamp(avg_ts)
+
+
 if __name__ == "__main__":
     start = datetime.datetime(2013, 1, 1)
     end = datetime.datetime(2017, 3, 4)
     res = gen_complete_days(start, end)
-    print(pprint.pformat(res))
+    # print(pprint.pformat(res))
+
+    dts = (start, end)
+    print(avg_datetime(*dts))
