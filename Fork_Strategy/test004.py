@@ -19,7 +19,7 @@ def get(self, jid):
 
         if node_type == "all":
             if origin.get("parent"):
-                message = f"暂时不支持在源策略节点 {origin.get('parent')} 之外的刷新请求"
+                message = f"暂时不支持在源策略节点 {origin.get('parent')} 之外的刷新请求"  # FIXME
                 return APIResponse(7, message).to_json()
 
             forked_strategies = MongoJStrategies.collection().find({"user_id": user_id, "origin": jid})
@@ -66,8 +66,8 @@ def get(self, jid):
                                  "parent": parent,
                                  })
             # current_app.logger.info(f"{forked_infos}")
-            # 将forked_infos按照时间排序
-            forked_infos = sorted(forked_infos, key=lambda item: item["create_time"])
+            # # 将forked_infos按照时间排序
+            # forked_infos = sorted(forked_infos, key=lambda item: item["create_time"])
             # current_app.logger.info(f"{forked_infos}")
             self.cache.cache(jid, value=forked_infos)
         # if not git_tree:
