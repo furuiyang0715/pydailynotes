@@ -8,7 +8,7 @@ def get(self, jid):
     :return:
     """
     forked_infos = self.cache.get(jid)
-    git_tree = self.tree_cache.get(jid)
+    # git_tree = self.tree_cache.get(jid)
 
     if not forked_infos:
         current_app.logger.info("This is first to get forked_infos. No cache.")
@@ -70,8 +70,8 @@ def get(self, jid):
             forked_infos = sorted(forked_infos, key=lambda item: item["create_time"])
             # current_app.logger.info(f"{forked_infos}")
             self.cache.cache(jid, value=forked_infos)
-        if not git_tree:
-            current_app.logger.info("This is first to get git tree. No cache.")
-            git_tree = self.build_tree(forked_infos, jid)
-            self.tree_cache.cache(jid, value=git_tree)
+        # if not git_tree:
+        #     current_app.logger.info("This is first to get git tree. No cache.")
+        #     git_tree = self.build_tree(forked_infos, jid)
+        #     self.tree_cache.cache(jid, value=git_tree)
     return APIResponse(1, {"forked_infos": forked_infos, "git_tree": git_tree}).to_json()
