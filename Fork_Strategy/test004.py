@@ -79,13 +79,17 @@ def get(self, jid):
 
 class Node(object):
 
-    nodes = []
+    # nodes = []
 
-    def __init__(self, kwargs):
+    def __init__(self, nodes: list, kwargs):
         """
-        对 Node 进行初始化
-        :param kwargs:
+        初始化
+        :param nodes: 树的全部节点对象
+        :param kwargs: 当前节点参数
         """
+
+        self.nodes = nodes
+
         self.forked_id = kwargs.get("forked_id")
         self.max_drawdown = kwargs.get("max_drawdown")
         self.annualized_returns = kwargs.get("annualized_returns")
@@ -119,35 +123,67 @@ class Node(object):
         """
         return [n for n in self.nodes if n.parent == self.forked_id]
 
-    def _process_datas(self, datas):
-        """
-        处理原始数据
-        :param datas:
-        :return:
-        """
-
-        # forked_infos.append({"forked_id": str(forked_strategy.get("_id")),
-        #  "max_drawdown": max_drawdown,
-        #  "annualized_returns": annualized_returns,
-        #  "create_time": create_time,  # 分支创建时间
-        #  "desc": desc,
-        #  "origin": origin,
-        #  "parent": parent,
-        #
-        #  "children": [],
-        #  })
-
-        # 构建节点列表集
-        for data in datas:
-            node = Node(**data)
-            self.nodes.append(node)
-
-        # 为各个节点对象建立联系
-        for node in self.nodes:
-            children_ids = [data["forked_id"] for data in datas if data["parent"] == node.forked_id]
-            children = [node for node in self.nodes if node.forked_id in children_ids]
-            node.children.extend(children)
+    # def _process_datas(self, datas):
+    #     """
+    #     处理原始数据
+    #     :param datas:
+    #     :return:
+    #     """
+    #
+    #     # forked_infos.append({"forked_id": str(forked_strategy.get("_id")),
+    #     #  "max_drawdown": max_drawdown,
+    #     #  "annualized_returns": annualized_returns,
+    #     #  "create_time": create_time,  # 分支创建时间
+    #     #  "desc": desc,
+    #     #  "origin": origin,
+    #     #  "parent": parent,
+    #     #
+    #     #  "children": [],
+    #     #  })
+    #
+    #     # 构建节点列表集
+    #     for data in datas:
+    #         node = Node(**data)
+    #         self.nodes.append(node)
+    #
+    #     # 为各个节点对象建立联系
+    #     for node in self.nodes:
+    #         children_ids = [data["forked_id"] for data in datas if data["parent"] == node.forked_id]
+    #         children = [node for node in self.nodes if node.forked_id in children_ids]
+    #         node.children.extend(children)
 
     # def __repr__(self):
     #     # just for test
     #     return self.forked_id
+
+
+def process_datas(datas):
+    """
+    处理原始数据
+    :param datas:
+    :return:
+    """
+    # forked_infos.append({"forked_id": str(forked_strategy.get("_id")),
+    #  "max_drawdown": max_drawdown,
+    #  "annualized_returns": annualized_returns,
+    #  "create_time": create_time,  # 分支创建时间
+    #  "desc": desc,
+    #  "origin": origin,
+    #  "parent": parent,
+    #
+    #  "children": [],
+    #  })
+
+    nodes = []
+    # 构建节点列表集
+    for data in datas:
+        node = Node(**data)
+        nodes.append(node)
+
+    # 为各个节点对象建立联系
+    for node in nodes:
+        children_ids = [data["forked_id"] for data in datas if data["parent"] == node.forked_id]
+        children = [node for node in nodes if node.forked_id in children_ids]
+        node.children.extend(children)
+
+    return nodes
