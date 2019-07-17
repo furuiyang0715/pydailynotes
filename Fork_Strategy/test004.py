@@ -75,3 +75,79 @@ def get(self, jid):
         #     git_tree = self.build_tree(forked_infos, jid)
         #     self.tree_cache.cache(jid, value=git_tree)
     return APIResponse(1, {"forked_infos": forked_infos, "git_tree": git_tree}).to_json()
+
+
+class Node(object):
+
+    nodes = []
+
+    def __init__(self, kwargs):
+        """
+        对 Node 进行初始化
+        :param kwargs:
+        """
+        self.forked_id = kwargs.get("forked_id")
+        self.max_drawdown = kwargs.get("max_drawdown")
+        self.annualized_returns = kwargs.get("annualized_returns")
+        self.create_time = kwargs.get("create_time")
+        self.desc = kwargs.get("desc")
+        self.origin = kwargs.get("origin")
+        self.parent = kwargs.get("parent")
+        self.children = kwargs.get("children", [])
+
+    def get_nodes(self):
+        """
+        获取该节点下的全部结构字典
+        """
+        d = dict()
+        d['forked_id'] = self.forked_id
+        d['max_drawdown'] = self.max_drawdown
+        d['annualized_returns'] = self.annualized_returns
+        d['create_time'] = self.create_time
+        d['desc'] = self.desc
+        d['origin'] = self.origin
+        d['parent'] = self.parent
+        children = self.get_children()
+        # 递归调用
+        if children:
+            d['children'] = [child.get_nodes() for child in children]
+        return d
+
+    def get_children(self):
+        """
+        获取该节点下的全部节点对象
+        """
+        return [n for n in self.nodes if n.parent == self.forked_id]
+
+    def _process_datas(self, datas):
+        """
+        处理原始数据
+        :param datas:
+        :return:
+        """
+
+        # forked_infos.append({"forked_id": str(forked_strategy.get("_id")),
+        #  "max_drawdown": max_drawdown,
+        #  "annualized_returns": annualized_returns,
+        #  "create_time": create_time,  # 分支创建时间
+        #  "desc": desc,
+        #  "origin": origin,
+        #  "parent": parent,
+        #
+        #  "children": [],
+        #  })
+
+        # 构建节点列表集
+        for data in datas:
+            node = Node(**data)
+            self.nodes.append(node)
+
+        # 为各个节点对象建立联系
+        for node in self.nodes:
+            children_ids = [data["forked_id"] for data in datas if data["parent"] == node.forked_id]
+            children = [node for node in self.nodes if node.forked_id in children_ids]
+            node.children.extend(children)
+
+    # def __repr__(self):
+    #     # just for test
+    #     return self.forked_id
