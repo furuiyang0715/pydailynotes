@@ -1,6 +1,0 @@
-### 环境要求 
-tensorflow
-h5py==2.8.0
-numpy==1.14.2
-scikit-learn==0.18.1
-matplotlib==2.2.2
