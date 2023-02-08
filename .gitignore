@@ -1,7 +1,7 @@
 venv/
 *.pyc
 persist
-temp
+temps
 local
 JZquant.egg-info
 bcolz
